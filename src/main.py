@@ -1,12 +1,12 @@
 # src/main.py
 import pygame
-import sys
 
 # Pygame Global Setup
 pygame.init()
-screen = pygame.display.set_mode((1280,720))
+screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 running = True
+
 
 def event_handler():
     for event in pygame.event.get():
@@ -15,8 +15,7 @@ def event_handler():
             pygame.display.quit()
             pygame.quit()
             exit()
-            sys.exit()
-            running = False
+
 
 def main():
     # Main Program Loop
@@ -27,8 +26,6 @@ def main():
         pygame.display.flip()
         clock.tick(60)
 
-    
+
 if __name__ == "__main__":
     main()
-
-

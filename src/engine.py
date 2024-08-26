@@ -25,17 +25,26 @@ class Vec2:
 
 def world_to_screen(x, y) -> (float, float):
     return (x, pygame.display.Info().current_h-y)
-    
+
+def screen_to_world(x, y) -> (float, float):
+    return (x, pygame.display.Info().current_h-y)
 
 class World_Rect:
     def __init__(self) -> None:
-        self.world_position = Vec2(0,50)
-        self.size = Vec2(50, 50)
+        self.world_position = Vec2(pygame.display.Info().current_w / 2, pygame.display.Info().current_h / 2)
+        self.size = Vec2(300, 400)
+        self.scale = Vec2(1.25, 1.25) 
         self.color = "deepskyblue"
+        self.anchor = Vec2(0.5, 0.5)
 
     def Draw(self, screen) -> None:
         wp = self.world_position
-        rect = pygame.Rect(*world_to_screen(wp.x, wp.y), self.size.x, self.size.y)
+        true_sizeX = self.size.x * self.scale.x
+        true_sizeY = self.size.y * self.scale.y
+        twpX = wp.x - true_sizeX * self.anchor.x
+        twpY = wp.y + true_sizeY * self.anchor.y
+        sp = Vec2(*world_to_screen(twpX, twpY))
+        rect = pygame.Rect(sp.x, sp.y, true_sizeX, true_sizeY)
         pygame.draw.rect(screen, "Purple", rect)
 
 class Game:

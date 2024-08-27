@@ -30,14 +30,15 @@ def screen_to_world(x, y) -> (float, float):
     return (x, pygame.display.Info().current_h-y)
 
 class World_Rect:
-    def __init__(self) -> None:
+    def __init__(self, screen) -> None:
         self.world_position = Vec2(pygame.display.Info().current_w / 2, pygame.display.Info().current_h / 2)
         self.size = Vec2(300, 400)
         self.scale = Vec2(1.25, 1.25) 
         self.color = "deepskyblue"
         self.anchor = Vec2(0.5, 0.5)
+        self.screen = screen
 
-    def Draw(self, screen) -> None:
+    def Draw(self) -> None:
         wp = self.world_position
         true_sizeX = self.size.x * self.scale.x
         true_sizeY = self.size.y * self.scale.y
@@ -45,12 +46,25 @@ class World_Rect:
         twpY = wp.y + true_sizeY * self.anchor.y
         sp = Vec2(*world_to_screen(twpX, twpY))
         rect = pygame.Rect(sp.x, sp.y, true_sizeX, true_sizeY)
-        pygame.draw.rect(screen, "Purple", rect)
+        pygame.draw.rect(self.screen, "Purple", rect)
+
+class Card:
+    def __init__(self, screen):
+        self.world_rect = World_Rect(screen)
+
+    def Update(self):
+        mousex, mousey = screen_to_world(*pygame.mouse.get_pos())
+        self.world_rect.world_position.x = mousex
+        self.world_rect.world_position.y = mousey
+
+    def Draw(self):
+        self.world_rect.Draw()
 
 class Game:
     def __init__(self, screen) -> None:
         self.screen = screen
-        self.rect = World_Rect()
+        self.card = Card(screen)
 
     def update(self) -> None:
-        self.rect.Draw(self.screen)
+        self.card.Update()
+        self.card.Draw()

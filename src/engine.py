@@ -34,28 +34,33 @@ class World_Rect:
         self.world_position = Vec2(pygame.display.Info().current_w / 2, pygame.display.Info().current_h / 2)
         self.size = Vec2(300, 400)
         self.scale = Vec2(1.25, 1.25) 
+        self.width = self.size.x * self.scale.x
+        self.height = self.size.y * self.scale.y
         self.color = "deepskyblue"
         self.anchor = Vec2(0.5, 0.5)
         self.screen = screen
 
     def Draw(self) -> None:
         wp = self.world_position
-        true_sizeX = self.size.x * self.scale.x
-        true_sizeY = self.size.y * self.scale.y
-        twpX = wp.x - true_sizeX * self.anchor.x
-        twpY = wp.y + true_sizeY * self.anchor.y
-        sp = Vec2(*world_to_screen(twpX, twpY))
-        rect = pygame.Rect(sp.x, sp.y, true_sizeX, true_sizeY)
+        anchor_posX = wp.x - self.width * self.anchor.x
+        anchor_posY = wp.y + self.height * self.anchor.y
+        sp = Vec2(*world_to_screen(anchor_posX, anchor_posY))
+        rect = pygame.Rect(sp.x, sp.y, self.width, self.height)
         pygame.draw.rect(self.screen, "Purple", rect)
+
+    def Contains(self, x, y) -> bool:
+        return self.world_position.x <= x <= self.world_position.x + self.width and self.world_position.y - self.height <= y <= self.world_position.y
 
 class Card:
     def __init__(self, screen):
         self.world_rect = World_Rect(screen)
 
     def Update(self):
+        left_mouse, right_mouse, middle_mouse = pygame.mouse.get_pressed(num_buttons=3)
         mousex, mousey = screen_to_world(*pygame.mouse.get_pos())
-        self.world_rect.world_position.x = mousex
-        self.world_rect.world_position.y = mousey
+        if left_mouse and self.world_rect.Contains(mousex, mousey):
+            self.world_rect.world_position.x = mousex
+            self.world_rect.world_position.y = mousey
 
     def Draw(self):
         self.world_rect.Draw()
